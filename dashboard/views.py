@@ -18,6 +18,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from django.contrib import messages
+import json
+
 # Create your views here.
 
 class ProductPerPagePermisson(PageNumberPagination):
@@ -261,8 +263,82 @@ class ListCartItem(ListAPIView):
 
 
 #order CURD
-class CreateOrder(CreateAPIView):
+class CreateOrder(ListCreateAPIView):
     serializer_class = OrderSerializer
+    permission_classes = [IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        user = request.user
+        cart = Cart.objects.get(user=user)
+        cart_items = CartItem.objects.filter(cart=cart)
+        created_at = request.data.get('created_at')
+    
+        address_choice = request.data.get('address_choice')
+
+        if address_choice == 'new':
+            address = request.data.get('address')
+            city = request.data.get('city')
+            state = request.data.get('state')
+            country = request.data.get('country')
+            postal_code = request.data.get('postal_code')
+
+            shipping_address, created = ShippingAddress.objects.get_or_create(
+                user=user,
+                address=address,
+                city=city,
+                state=state,
+                country=country,
+                postal_code=postal_code
+            )
+        else:
+            chosen_address = ShippingAddress.objects.get(id=int(address_choice))
+            shipping_address = chosen_address
+
+        subtotal = 0
+        total_shipping_fee = 0
+        for item in cart_items:
+            item_total_price = item.product.price * item.quantity
+            subtotal += item_total_price
+            total_shipping_fee += item.product.shipping_fee * item.quantity
+        total_amount = subtotal + total_shipping_fee
+
+        shipping_address_serializer = ShippingAddressSerializer(shipping_address)
+        shipping_address_data = shipping_address_serializer.data
+        formatted_address = f"{shipping_address_data['address']}, {shipping_address_data['city']}, {shipping_address_data['state']}, {shipping_address_data['country']} {shipping_address_data['postal_code']}"
+
+       
+        
+
+
+        order = Order.objects.create(
+            user=user, created_at=created_at, total_amount=total_amount, shipping_address=formatted_address, is_paid=True
+        )
+
+        for cart_item in cart_items:
+            OrderItem.objects.create(
+                order=order,
+                product=cart_item.product,
+                quantity=cart_item.quantity
+            )
+        cart_item_serializer = CartItemSerializer(cart_items, many=True)
+        cart_item_data = cart_item_serializer.data
+        
+
+        context = {
+            'cart_items': cart_item_data,
+            # 'old_shipping_addresses': old_shipping_addresses,
+            'shipping_address': shipping_address_data,
+            'total_amount': total_amount,
+        }
+        cart_items.delete()
+
+        return Response(context, status=status.HTTP_201_CREATED)
+
+    
+
+
+
+    
 
 class UpdateOrder(RetrieveUpdateAPIView):
     serializer_class = OrderSerializer
@@ -332,6 +408,11 @@ class ListReview(ListAPIView):
 #ShippingAddress CURD
 class CreateShippingAddress(CreateAPIView):
     serializer_class = ShippingAddressSerializer
+    permission_classes = [IsAuthenticated] 
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+    
 
 class UpdateShippingAddress(RetrieveUpdateAPIView):
     serializer_class = ShippingAddressSerializer
@@ -348,5 +429,9 @@ class DeleteShippingAddress(RetrieveDestroyAPIView):
         return ShippingAddress.objects.get(slug=slug)
 
 class ListShippingAddress(ListAPIView):
-    queryset = ShippingAddress.objects.all()
     serializer_class = ShippingAddressSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return  ShippingAddress.objects.filter(user=user)

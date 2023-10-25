@@ -113,17 +113,7 @@ class Order(models.Model):
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
     is_paid = models.BooleanField(default=False)
     shipping_address = models.CharField(max_length=500, null=True, blank=True)
-    slug = models.SlugField(max_length=200, unique=True)
-
-    def save(self, *args, **kwargs):
-        existing_order = Order.objects.filter(slug=self.slug)
-        if existing_order.exists():
-            # Order with the same slug already exists, handle it here
-            # For example, you might want to update the existing order
-            existing_order.update(total_amount=self.total_amount)
-        else:
-            self.slug = slugify(self.user.username + ' Order')
-            super().save(*args, **kwargs)
+    
 
 
 
@@ -173,7 +163,7 @@ class ShippingAddress(models.Model):
     country = models.CharField(max_length=100)
     postal_code = models.CharField(max_length=20)
     mobile_no = models.IntegerField()
-    slug = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    
 
 
 
