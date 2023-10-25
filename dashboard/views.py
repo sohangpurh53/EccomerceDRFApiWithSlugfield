@@ -70,6 +70,9 @@ class UpdateProduct(RetrieveUpdateAPIView):
         slug = self.kwargs.get('slug')
         return Product.objects.get(slug=slug)
     
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+    
 class DeleteProduct(RetrieveDestroyAPIView):
     serializer_class = ProductSerializer
     # permission_classes = [IsAdminUser]
