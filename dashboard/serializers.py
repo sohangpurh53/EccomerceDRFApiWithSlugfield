@@ -8,16 +8,54 @@ class CategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = ['id','name']
 
+
+
+
+class ProductsImageSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = ProductImage
+        fields = "__all__"
+
+class ProductSerializers(serializers.ModelSerializer):
+    images =  ProductsImageSerializers(many=True, read_only=True)
+    uploaded_images = serializers.ListField(
+        child=serializers.ImageField(allow_empty_file=False, use_url=False),
+        write_only=True
+    )
+
+    class Meta:
+        model = Product
+        fields = ['id', 'name', 'description', 'price', 'stock', 'category', 
+                 "images", "uploaded_images", 'seller'
+                  ]
+
+    def create(self, validated_data):
+        uploaded_images = validated_data.pop("uploaded_images")
+        product = Product.objects.create(**validated_data)
+
+        for image in uploaded_images:
+            ProductImage.objects.create(product=product, image=image)
+
+        return product
+
+
+
+
+
+
+
+
+
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ['id', 'name', 'description', 'price', 'shipping_fee', 'stock', 'category', 'seller']
+        fields = ['id', 'name', 'description', 'price', 'shipping_fee', 'stock', 'category', 'seller', ]
 
 
-class ProductImageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ProductImage
-        fields = ['id','product','image']
+# class ProductImageSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = ProductImage
+#         fields = ['id','product','image']
 
 class CartSerializer(serializers.ModelSerializer):
     class Meta:

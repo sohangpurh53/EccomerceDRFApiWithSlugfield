@@ -4,12 +4,12 @@ from api.models import (Cart ,Category, Order, Product,
                          ShippingAddress, Seller, Review,
                            OrderItem, CartItem, AboutUs, ProductImage)
 
-from dashboard.serializers import (CategorySerializer, ProductSerializer,CartItemSerializer,HomepageProductImageSerializer,
-                                    OrderSerializer, OrderItemSerializer,ReviewSerializer,ListProductSerializer,
-                                    ShippingAddressSerializer,ListCategorySerializer,
-                                    ProductImageSerializer,CartSerializer)
+from dashboard.serializers import (CategorySerializer, ProductSerializers, ProductsImageSerializers, CartItemSerializer,HomepageProductImageSerializer,
+                                    OrderSerializer, OrderItemSerializer,ReviewSerializer,ListProductSerializer,ProductSerializer,
+                                    ShippingAddressSerializer,ListCategorySerializer, CartSerializer)
 
 from user.serializers import SellerSerializer
+from rest_framework import viewsets
 
 from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView, RetrieveDestroyAPIView, ListAPIView, RetrieveAPIView, ListCreateAPIView
 from rest_framework.pagination import PageNumberPagination
@@ -59,8 +59,9 @@ class ListCategory(ListAPIView):
 
 
 #product CURD
-class CreateProduct(CreateAPIView):
-    serializer_class = ProductSerializer
+class CreateProductViewset(viewsets.ModelViewSet):
+    serializer_class = ProductSerializers
+    queryset = Product.objects.all()
 
 class UpdateProduct(RetrieveUpdateAPIView):
     serializer_class = ProductSerializer
@@ -74,7 +75,7 @@ class UpdateProduct(RetrieveUpdateAPIView):
         return self.update(request, *args, **kwargs)
     
 class DeleteProduct(RetrieveDestroyAPIView):
-    serializer_class = ProductSerializer
+    serializer_class = ProductSerializers
     # permission_classes = [IsAdminUser]
 
     def get_object(self):
@@ -97,14 +98,17 @@ class SingleProduct(RetrieveAPIView):
         return Product.objects.get(slug=slug)
 
 
+
+
+
 #productimage CURD
 class ProductImageCreate(CreateAPIView):
-    serializer_class = ProductImageSerializer
+    serializer_class = ProductsImageSerializers
 
 
 
 class UdpateProductImage(RetrieveUpdateAPIView):
-    serializer_class = ProductImageSerializer
+    serializer_class = ProductsImageSerializers
     def get_queryset(self):
         slug = self.kwargs.get('slug')
         return ProductImage.objects.get(slug=slug)
@@ -115,12 +119,10 @@ class UdpateProductImage(RetrieveUpdateAPIView):
 
 class DeleteProductImage(RetrieveDestroyAPIView):
     queryset = ProductImage.objects.all()
-    serializer_class = ProductImageSerializer
-
-
+    serializer_class = ProductsImageSerializers
 
 class ProductImageView(ListAPIView):
-    serializer_class = ProductImageSerializer
+    serializer_class = ProductsImageSerializers
 
     def get_queryset(self):
         product_slug = self.kwargs.get('product_slug')

@@ -1,6 +1,9 @@
 from django.contrib import admin
 from django.urls import path, include
-from dashboard.views import (  CreateProduct,UpdateProduct,DeleteProduct,ListProduct,SingleProduct,HomepageProduct,
+from rest_framework.routers import DefaultRouter
+from dashboard.views import (  
+                              CreateProductViewset,UpdateProduct,DeleteProduct,
+                              HomepageProduct,ListProduct,SingleProduct,
                               ProductImageCreate, UdpateProductImage, DeleteProductImage,ProductImageView,
                               CreateCategory, UpdateCategory, DeleteCategory, ListCategory,
                               ListCartview, DeleteCartview, UpdateCartview, CreateCartview,AddToCartView, ReduceQuantityView, RemoveCartItemView,
@@ -9,8 +12,14 @@ from dashboard.views import (  CreateProduct,UpdateProduct,DeleteProduct,ListPro
                               CreateOrderItem, UpdateOrderItem, DeleteOrderItem, ListOrderItem,
                               CreateReview, UpdateReview, DeleteReview, ListReview,
                               CreateShippingAddress, UpdateShippingAddress, DeleteShippingAddress, ListShippingAddress,
-                              CreateSeller,ListSeller 
+                              CreateSeller,ListSeller,
+                              
                               )
+router = DefaultRouter()
+router.register(r'create/product', CreateProductViewset, basename='product')
+
+   
+ 
 
 urlpatterns = [
    #category urls
@@ -19,21 +28,23 @@ urlpatterns = [
    path('delete/category/<slug:slug>/', DeleteCategory.as_view(), name='delete-category' ),
    path('list/category/', ListCategory.as_view(), name='list-category' ),
 
+
+
    #product urls
-   path('create/product/', CreateProduct.as_view(), name='create-product' ),
+   path('', include(router.urls)),
    path('update/product/<slug:slug>/', UpdateProduct.as_view(), name='update-product' ),
    path('delete/product/<slug:slug>/', DeleteProduct.as_view(), name='delete-product' ),
    path('list/product/', ListProduct.as_view(), name='list-product' ),
    path('homepage/', HomepageProduct.as_view(), name='homepage-product' ),
-   path('product/<slug:slug>/', SingleProduct.as_view(), name='list-product' ),
+    path('product/<slug:slug>/', SingleProduct.as_view(), name='list-product' ),
 
-   #product-image urls
+   #product Images
+   path('products/images/<slug:product_slug>/', ProductImageView.as_view(), name='product-image-list'),
    path('create/product/image/', ProductImageCreate.as_view() , name='create-product-image'),
    path('update/product/image/<slug:slug>/', UdpateProductImage.as_view() , name='update-product-image'),
    path('delete/product/image/<int:pk>/', DeleteProductImage.as_view() , name='delete-product-image'),
-   # path('list/product/image/',   ListProductImage.as_view() , name='list-product-image'),
-   path('products/images/<slug:product_slug>/', ProductImageView.as_view(), name='product-image-list'),
-  
+
+
 
 
    path('create/seller/', CreateSeller.as_view(), name='' ),
