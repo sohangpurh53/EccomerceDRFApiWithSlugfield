@@ -32,6 +32,7 @@ class ProductPerPagePermisson(PageNumberPagination):
 #category CURD
 class CreateCategory(CreateAPIView):
     serializer_class = CategorySerializer
+    permission_classes = [IsAdminUser]
 
 
 class UpdateCategory(RetrieveUpdateAPIView):
@@ -62,10 +63,11 @@ class ListCategory(ListAPIView):
 class CreateProductViewset(viewsets.ModelViewSet):
     serializer_class = ProductSerializers
     queryset = Product.objects.all()
+    permission_classes = [IsAdminUser]
 
 class UpdateProduct(RetrieveUpdateAPIView):
     serializer_class = ProductSerializer
-    # permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminUser]
     
     def get_object(self):
         slug = self.kwargs.get('slug')
@@ -76,7 +78,7 @@ class UpdateProduct(RetrieveUpdateAPIView):
     
 class DeleteProduct(RetrieveDestroyAPIView):
     serializer_class = ProductSerializers
-    # permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminUser]
 
     def get_object(self):
         slug = self.kwargs.get('slug')
@@ -120,6 +122,7 @@ class UdpateProductImage(RetrieveUpdateAPIView):
 class DeleteProductImage(RetrieveDestroyAPIView):
     queryset = ProductImage.objects.all()
     serializer_class = ProductsImageSerializers
+    permission_classes = [IsAdminUser]
 
 class ProductImageView(ListAPIView):
     serializer_class = ProductsImageSerializers
@@ -263,8 +266,20 @@ class DeleteCartItem(RetrieveDestroyAPIView):
         return CartItem.objects.get(slug=slug)
 
 class ListCartItem(ListAPIView):
-    queryset = CartItem.objects.all()
-    serializer_class = CartItemSerializer
+      serializer_class = CartItemSerializer
+      permission_classes = [IsAuthenticated]
+
+      def get_queryset(self):
+        # Get the user's cart from the request
+        user = self.request.user
+        try:
+            user_cart = Cart.objects.get(user=user)
+            queryset = CartItem.objects.filter(cart=user_cart)
+        except Cart.DoesNotExist:
+            # Handle the case where the user does not have a cart
+            queryset = CartItem.objects.none()
+
+        return queryset
 
 
 #order CURD
@@ -385,6 +400,7 @@ class DeleteOrderItem(RetrieveDestroyAPIView):
 class ListOrderItem(ListAPIView):
     queryset = OrderItem.objects.all()
     serializer_class = OrderItemSerializer
+    
 
 
 #Review CURD

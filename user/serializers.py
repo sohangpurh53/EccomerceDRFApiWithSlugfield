@@ -37,6 +37,6 @@ class ShippingAddressSerializer(serializers.ModelSerializer):
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['first_name', 'last_name','email','username',]
+        fields = ['first_name', 'last_name','email','username',  'is_staff', 'is_superuser', 'is_active']
 
-       
+      
