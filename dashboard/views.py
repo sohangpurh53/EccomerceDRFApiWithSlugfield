@@ -19,6 +19,7 @@ from rest_framework import status
 from rest_framework.views import APIView
 from django.contrib import messages
 import json
+from rest_framework.filters import OrderingFilter
 
 # Create your views here.
 
@@ -85,9 +86,11 @@ class DeleteProduct(RetrieveDestroyAPIView):
         return Product.objects.get(slug=slug)
 
 class HomepageProduct(ListAPIView):
-    queryset = Product.objects.all()
     serializer_class = HomepageProductImageSerializer
+    queryset = Product.objects.all().order_by('name')
     pagination_class = ProductPerPagePermisson
+    filter_backends = [OrderingFilter]
+    ordering_fields = ['name', 'price', 'category'] 
 
 class ListProduct(ListAPIView):
     queryset = Product.objects.all()

@@ -40,3 +40,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
         fields = ['first_name', 'last_name','email','username',  'is_staff', 'is_superuser', 'is_active']
 
       
+
+
+

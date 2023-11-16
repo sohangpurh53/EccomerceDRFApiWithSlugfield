@@ -44,18 +44,28 @@ class ProductSerializers(serializers.ModelSerializer):
 
 
 
-
+class ProductImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductImage
+        fields = ['id','product','image']
 
 class ProductSerializer(serializers.ModelSerializer):
+    first_image = serializers.SerializerMethodField()
     class Meta:
         model = Product
-        fields = ['id', 'name', 'description', 'price', 'shipping_fee', 'stock', 'category', 'seller', ]
+        fields = ['id', 'name', 'description', 'price', 'shipping_fee', 'stock', 'category', 'seller', 'first_image']
+    def get_first_image(self, obj):
+        # Get the first image for the product
+        first_image = ProductImage.objects.filter(product=obj).first()
+
+        # Serialize the first image
+        if first_image:
+            return first_image.image.url
+        else:
+            return None
 
 
-# class ProductImageSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = ProductImage
-#         fields = ['id','product','image']
+
 
 class CartSerializer(serializers.ModelSerializer):
     class Meta:
@@ -124,3 +134,11 @@ class  ListProductSerializer(serializers.ModelSerializer):
 #     class Meta:
 #         model = ProductImage
 #         fields = ['id','product','image', 'slug']
+
+
+class UserOrderDetailsSerializer(serializers.ModelSerializer):
+    order = OrderSerializer()
+    product = ProductSerializer()
+    class Meta:
+        model = OrderItem
+        fields = ['id','order', 'product','quantity']
