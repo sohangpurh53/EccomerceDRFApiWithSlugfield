@@ -378,8 +378,9 @@ class DeleteOrder(RetrieveDestroyAPIView):
         return Order.objects.get(slug=slug)
 
 class ListOrder(ListAPIView):
-    queryset = Order.objects.all()
-    serializer_class = OrderSerializer
+    serializer_class = OrderItemSerializer
+
+    queryset = OrderItem.objects.select_related('order', 'product')
     
 
 #orderItem CURD
