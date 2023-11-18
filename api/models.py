@@ -49,20 +49,11 @@ class Product(models.Model):
     seller = models.ForeignKey(Seller, on_delete=models.CASCADE)
     slug = models.SlugField(max_length=200, unique=True) 
 
-    # def save(self, *args, **kwargs):
-    #     existing_product = Product.objects.filter(name=self.name)
-    #     if existing_product.exists():
-    #         # Product with the same name already exists, handle it here
-    #         # For example, you might want to update the existing product
-    #         existing_product.update(slug=slugify(self.name))
-    #     else:
-    #         self.slug = slugify(self.name)
-    #         super().save(*args, **kwargs)
+  
     def save(self, *args, **kwargs):
-        if self.id:  # If the product already exists
-            # We don't want to update the slug here, only when the name changes
+        if self.id: 
             super().save(*args, **kwargs)
-        else:  # If it's a new product being created
+        else: 
             self.slug = slugify(self.name)
             super().save(*args, **kwargs)
 

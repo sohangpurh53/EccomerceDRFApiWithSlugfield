@@ -4,12 +4,14 @@ from api.models import (Cart ,Category, Order, Product,
                          ShippingAddress, Seller, Review,
                            OrderItem, CartItem, AboutUs, ProductImage)
 
-from dashboard.serializers import (CategorySerializer, ProductSerializers, ProductsImageSerializers, CartItemSerializer,HomepageProductImageSerializer,
+from dashboard.serializers import (CategorySerializer, ProductSerializers,SearchProductSerializer,
+                                    ProductsImageSerializers, CartItemSerializer,HomepageProductImageSerializer,
                                     OrderSerializer, OrderItemSerializer,ReviewSerializer,ListProductSerializer,ProductSerializer,
                                     ShippingAddressSerializer,ListCategorySerializer, CartSerializer)
 
 from user.serializers import SellerSerializer
 from rest_framework import viewsets
+from rest_framework import filters
 
 from rest_framework.generics import CreateAPIView, RetrieveUpdateAPIView, RetrieveDestroyAPIView, ListAPIView, RetrieveAPIView, ListCreateAPIView
 from rest_framework.pagination import PageNumberPagination
@@ -460,3 +462,18 @@ class ListShippingAddress(ListAPIView):
     def get_queryset(self):
         user = self.request.user
         return  ShippingAddress.objects.filter(user=user)
+
+
+
+
+
+#serach result
+class SerachProduct(ListAPIView):
+   serializer_class = SearchProductSerializer
+
+   filter_backends = [filters.SearchFilter]
+   search_fields = ['name']
+
+   def get_queryset(self):
+        queryset = Product.objects.all()
+        return queryset

@@ -145,3 +145,19 @@ class UserOrderDetailsSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderItem
         fields = ['id','order', 'product','quantity']
+
+
+
+
+#search results order serializers
+class SearchProductSerializer(serializers.ModelSerializer):
+    first_image = serializers.SerializerMethodField()
+    class Meta:
+        model = Product
+        fields = ['id', 'name', 'description', 'price', 'shipping_fee', 'stock', 'category', 'seller', 'first_image' ,'slug']
+
+    def get_first_image(self, obj):
+        first_image = ProductImage.objects.filter(product=obj).first()
+        if first_image:
+            return first_image.image.url
+        return None

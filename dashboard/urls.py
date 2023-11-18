@@ -12,7 +12,7 @@ from dashboard.views import (
                               CreateOrderItem, UpdateOrderItem, DeleteOrderItem, ListOrderItem,
                               CreateReview, UpdateReview, DeleteReview, ListReview,
                               CreateShippingAddress, UpdateShippingAddress, DeleteShippingAddress, ListShippingAddress,
-                              CreateSeller,ListSeller,
+                              CreateSeller,ListSeller,SerachProduct,
                               
                               )
 router = DefaultRouter()
@@ -90,4 +90,8 @@ urlpatterns = [
    path('delete/shipping-address/<slug:slug>/', DeleteShippingAddress.as_view() , name='delete-shipping-address'),
    path('list/shipping-address/', ListShippingAddress.as_view() , name='lis-shipping-address'),
   
+
+  #search result
+  path('product/', SerachProduct.as_view())
+
 ]
