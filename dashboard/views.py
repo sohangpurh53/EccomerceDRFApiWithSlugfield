@@ -5,7 +5,7 @@ from api.models import (Cart ,Category, Order, Product,
                            OrderItem, CartItem, AboutUs, ProductImage)
 
 from dashboard.serializers import (CategorySerializer, ProductSerializers,SearchProductSerializer,
-                                    ProductsImageSerializers, CartItemSerializer,HomepageProductImageSerializer,
+                                    ProductsImageSerializers, CartItemSerializer,HomepageProductImageSerializer,ListProductImageSerializer,
                                     OrderSerializer, OrderItemSerializer,ReviewSerializer,ListProductSerializer,ProductSerializer,
                                     ShippingAddressSerializer,ListCategorySerializer, CartSerializer)
 
@@ -97,6 +97,7 @@ class HomepageProduct(ListAPIView):
 class ListProduct(ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ListProductSerializer
+    permission_classes = [IsAdminUser]
 
 class SingleProduct(RetrieveAPIView):
     serializer_class = ProductSerializer
@@ -130,7 +131,8 @@ class DeleteProductImage(RetrieveDestroyAPIView):
     permission_classes = [IsAdminUser]
 
 class ProductImageView(ListAPIView):
-    serializer_class = ProductsImageSerializers
+    serializer_class = ListProductImageSerializer
+    permission_classes = [IsAdminUser]
 
     def get_queryset(self):
         product_slug = self.kwargs.get('product_slug')
@@ -381,6 +383,7 @@ class DeleteOrder(RetrieveDestroyAPIView):
 
 class ListOrder(ListAPIView):
     serializer_class = OrderItemSerializer
+    permission_classes = [IsAdminUser]
 
     queryset = OrderItem.objects.select_related('order', 'product')
     

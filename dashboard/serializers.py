@@ -161,3 +161,11 @@ class SearchProductSerializer(serializers.ModelSerializer):
         if first_image:
             return first_image.image.url
         return None
+    
+
+
+class ListProductImageSerializer(serializers.ModelSerializer):
+    product = ProductSerializers()
+    class Meta:
+        model = ProductImage
+        fields = ['id','product','image']
