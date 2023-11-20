@@ -4,7 +4,7 @@ from api.models import (Cart ,Category, Order, Product,
                          ShippingAddress, Seller, Review,
                            OrderItem, CartItem, AboutUs, ProductImage)
 
-from dashboard.serializers import (CategorySerializer, ProductSerializers,SearchProductSerializer,
+from dashboard.serializers import (CategorySerializer, ProductSerializers,SearchProductSerializer,AdminListProductSerializer,
                                     ProductsImageSerializers, CartItemSerializer,HomepageProductImageSerializer,ListProductImageSerializer,
                                     OrderSerializer, OrderItemSerializer,ReviewSerializer,ListProductSerializer,ProductSerializer,
                                     ShippingAddressSerializer,ListCategorySerializer, CartSerializer)
@@ -57,6 +57,7 @@ class DeleteCategory(RetrieveDestroyAPIView):
 class ListCategory(ListAPIView):
     queryset = Category.objects.all()
     serializer_class = ListCategorySerializer
+    permission_classes = [IsAdminUser]
 
 
 
@@ -105,6 +106,11 @@ class SingleProduct(RetrieveAPIView):
         slug = self.kwargs.get('slug')  # Get the slug from the URL parameters
         return Product.objects.get(slug=slug)
 
+class AdminListProduct(ListAPIView):
+    queryset = Product.objects.all()
+    serializer_class = AdminListProductSerializer
+    permission_classes = [IsAdminUser]
+
 
 
 
@@ -132,7 +138,7 @@ class DeleteProductImage(RetrieveDestroyAPIView):
 
 class ProductImageView(ListAPIView):
     serializer_class = ListProductImageSerializer
-    permission_classes = [IsAdminUser]
+    # permission_classes = [IsAdminUser]
 
     def get_queryset(self):
         product_slug = self.kwargs.get('product_slug')

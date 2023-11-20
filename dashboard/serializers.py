@@ -169,3 +169,17 @@ class ListProductImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductImage
         fields = ['id','product','image']
+
+
+
+#admin panel
+class  AdminListProductSerializer(serializers.ModelSerializer):
+    first_image = serializers.SerializerMethodField()
+    class Meta:
+        model = Product
+        fields = ['id', 'name', 'description', 'price','first_image', 'shipping_fee', 'stock', 'category', 'seller', 'slug']
+    def get_first_image(self, obj):
+        first_image = ProductImage.objects.filter(product=obj).first()
+        if first_image:
+            return first_image.image.url
+        return None

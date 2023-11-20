@@ -9,7 +9,7 @@ from dashboard.views import (
                               ListCartview, DeleteCartview, UpdateCartview, CreateCartview,AddToCartView, ReduceQuantityView, RemoveCartItemView,
                               CreateCartItem, UpdateCartItem, DeleteCartItem, ListCartItem,
                               CreateOrder, UpdateOrder, DeleteOrder, ListOrder,
-                              CreateOrderItem, UpdateOrderItem, DeleteOrderItem, ListOrderItem,
+                              CreateOrderItem, UpdateOrderItem, DeleteOrderItem, ListOrderItem,AdminListProduct,
                               CreateReview, UpdateReview, DeleteReview, ListReview,
                               CreateShippingAddress, UpdateShippingAddress, DeleteShippingAddress, ListShippingAddress,
                               CreateSeller,ListSeller,SerachProduct,
@@ -35,6 +35,7 @@ urlpatterns = [
    path('update/product/<slug:slug>/', UpdateProduct.as_view(), name='update-product' ),
    path('delete/product/<slug:slug>/', DeleteProduct.as_view(), name='delete-product' ),
    path('list/product/', ListProduct.as_view(), name='list-product' ),
+   path('admin/list/product/', AdminListProduct.as_view(), name='list-product' ),
    path('homepage/', HomepageProduct.as_view(), name='homepage-product' ),
     path('product/<slug:slug>/', SingleProduct.as_view(), name='list-product' ),
 
