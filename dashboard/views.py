@@ -4,7 +4,7 @@ from api.models import (Cart ,Category, Order, Product,
                          ShippingAddress, Seller, Review,
                            OrderItem, CartItem, AboutUs, ProductImage)
 
-from dashboard.serializers import (CategorySerializer, ProductSerializers,SearchProductSerializer,AdminListProductSerializer,
+from dashboard.serializers import (CategorySerializer, ProductSerializers,SearchProductSerializer,AdminListProductSerializer,ListReviewSerializer,
                                     ProductsImageSerializers, CartItemSerializer,HomepageProductImageSerializer,ListProductImageSerializer,
                                     OrderSerializer, OrderItemSerializer,ReviewSerializer,ListProductSerializer,ProductSerializer,
                                     ShippingAddressSerializer,ListCategorySerializer, CartSerializer)
@@ -26,7 +26,7 @@ from rest_framework.filters import OrderingFilter
 # Create your views here.
 
 class ProductPerPagePermisson(PageNumberPagination):
-    page_size = 25
+    page_size = 50
     page_size_query_param = 'page_size'
     max_page_size = 1000
 
@@ -422,6 +422,27 @@ class ListOrderItem(ListAPIView):
 class CreateReview(CreateAPIView):
     serializer_class = ReviewSerializer
 
+    def post(self, request, *args, **kwargs):
+        if request.user.is_authenticated:  # Ensure user is authenticated
+            product_id = kwargs.get('product_id')
+            product = get_object_or_404(Product, id=product_id)
+            user = request.user
+
+            user_review = Review.objects.filter(product=product, user=user).first()
+            if user_review:
+                return Response({"message": "You have already reviewed this product."},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            serializer = self.get_serializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save(product=product, user=user)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({"message": "Authentication required."},
+                            status=status.HTTP_401_UNAUTHORIZED)
+
 class UpdateReview(RetrieveUpdateAPIView):
     serializer_class = ReviewSerializer
 
@@ -437,8 +458,11 @@ class DeleteReview(RetrieveDestroyAPIView):
         return Review.objects.get(slug=slug)
 
 class ListReview(ListAPIView):
-    queryset = Review.objects.all()
-    serializer_class = ReviewSerializer
+    serializer_class = ListReviewSerializer
+
+    def get_queryset(self):
+        product_slug = self.kwargs.get('product_slug')  # Assuming 'product_slug' is passed in URL
+        return Review.objects.filter(product__slug=product_slug)
 
 
 #ShippingAddress CURD

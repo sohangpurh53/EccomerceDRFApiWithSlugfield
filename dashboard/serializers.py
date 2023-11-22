@@ -183,3 +183,12 @@ class  AdminListProductSerializer(serializers.ModelSerializer):
         if first_image:
             return first_image.image.url
         return None
+    
+
+
+#list product reviews
+class ListReviewSerializer(serializers.ModelSerializer):
+    user = UserProfileSerializer()
+    class Meta:
+        model = Review
+        fields = ['id','product', 'user','rating', 'comment', 'created_at']
