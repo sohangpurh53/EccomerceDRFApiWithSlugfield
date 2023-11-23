@@ -22,6 +22,7 @@ from rest_framework.views import APIView
 from django.contrib import messages
 import json
 from rest_framework.filters import OrderingFilter
+from rest_framework import permissions
 
 # Create your views here.
 
@@ -29,6 +30,7 @@ class ProductPerPagePermisson(PageNumberPagination):
     page_size = 50
     page_size_query_param = 'page_size'
     max_page_size = 1000
+
 
 
 
@@ -421,27 +423,21 @@ class ListOrderItem(ListAPIView):
 #Review CURD
 class CreateReview(CreateAPIView):
     serializer_class = ReviewSerializer
+    permission_classes = [IsAuthenticated]
+    def perform_create(self, serializer):
+        product = serializer.validated_data['product']
+        user = self.request.user
 
-    def post(self, request, *args, **kwargs):
-        if request.user.is_authenticated:  # Ensure user is authenticated
-            product_id = kwargs.get('product_id')
-            product = get_object_or_404(Product, id=product_id)
-            user = request.user
+        # Check if the user has already reviewed the product
+        existing_review = Review.objects.filter(product=product, user=user).exists()
 
-            user_review = Review.objects.filter(product=product, user=user).first()
-            if user_review:
-                return Response({"message": "You have already reviewed this product."},
-                                status=status.HTTP_400_BAD_REQUEST)
-
-            serializer = self.get_serializer(data=request.data)
-            if serializer.is_valid():
-                serializer.save(product=product, user=user)
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if existing_review:
+            return Response({"error": "You have already reviewed this product."},
+                            status=status.HTTP_400_BAD_REQUEST)
         else:
-            return Response({"message": "Authentication required."},
-                            status=status.HTTP_401_UNAUTHORIZED)
+            serializer.save(user=user)
+
+   
 
 class UpdateReview(RetrieveUpdateAPIView):
     serializer_class = ReviewSerializer
@@ -510,3 +506,7 @@ class SerachProduct(ListAPIView):
    def get_queryset(self):
         queryset = Product.objects.all()
         return queryset
+   
+
+
+
