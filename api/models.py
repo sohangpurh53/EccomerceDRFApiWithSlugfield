@@ -178,3 +178,15 @@ class AboutUs(models.Model):
     
     def __str__(self):
         return self.description
+    
+
+
+# contact us
+class Contact(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    phone_number = models.IntegerField()
+    enquiry = models.TextField()
+
+    def __str__(self):
+        return f"{self.name} - {self.email}"

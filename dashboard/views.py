@@ -1,10 +1,11 @@
 from django.shortcuts import get_object_or_404, render, redirect
 
-from api.models import (Cart ,Category, Order, Product,
+from api.models import (Cart ,Category, Order, Product,Contact,
                          ShippingAddress, Seller, Review,
                            OrderItem, CartItem, AboutUs, ProductImage)
 
-from dashboard.serializers import (CategorySerializer, ProductSerializers,SearchProductSerializer,AdminListProductSerializer,ListReviewSerializer,
+from dashboard.serializers import (CategorySerializer, ContactUsSerializer,
+                                   ProductSerializers,SearchProductSerializer,AdminListProductSerializer,ListReviewSerializer,
                                     ProductsImageSerializers, CartItemSerializer,HomepageProductImageSerializer,ListProductImageSerializer,
                                     OrderSerializer, OrderItemSerializer,ReviewSerializer,ListProductSerializer,ProductSerializer,
                                     ShippingAddressSerializer,ListCategorySerializer, CartSerializer)
@@ -23,6 +24,9 @@ from django.contrib import messages
 import json
 from rest_framework.filters import OrderingFilter
 from rest_framework import permissions
+from django.conf import settings
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
 
 # Create your views here.
 
@@ -510,3 +514,50 @@ class SerachProduct(ListAPIView):
 
 
 
+
+
+#contactus
+class ContactUsView(CreateAPIView):
+    serializer_class = ContactUsSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        name = serializer.validated_data['name']
+        email = serializer.validated_data['email']
+        phone_number = serializer.validated_data['phone_number']
+        enquiry = serializer.validated_data['enquiry']
+
+        recipient_email = settings.EMAIL_HOST_USER  # Replace with actual email
+
+        # Load the HTML templates
+        recipient_message = render_to_string('contact_receiver.html', {
+            'name': name,
+            'email': email,
+            'phone_number': phone_number,
+            'enquiry': enquiry,
+        })
+
+        user_message = render_to_string('contact_to_sender.html', {
+            'company': settings.EMAIL_HOST_USER, 
+        })
+
+        try:
+            # Send email to the designated recipient
+             send_mail('New Contact Form Submission', '', settings.EMAIL_HOST_USER, [recipient_email], fail_silently=False, html_message=recipient_message)
+            # Send a confirmation email to the user
+             send_mail('Thank you for contacting us', '', settings.EMAIL_HOST_USER, [email], fail_silently=False, html_message=user_message)
+
+            # If both emails were sent successfully, create a Contact object
+             contact = Contact.objects.create(
+                name=name,
+                email=email,
+                phone_number=phone_number,
+                enquiry=enquiry
+            )
+
+             return Response({'message': 'Success!'}, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            # If any error occurs during the email sending process, you can catch it here and handle it
+            return Response({'message': f'Error: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

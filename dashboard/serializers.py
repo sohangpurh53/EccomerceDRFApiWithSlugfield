@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from api.models import Cart ,Category, Order, Product, ShippingAddress, Seller, Review, OrderItem, CartItem, AboutUs, ProductImage
+from api.models import Cart ,Category, Order, Product, ShippingAddress, Seller, Review, OrderItem, CartItem, AboutUs, ProductImage, Contact
 from user.serializers import  UserSerializer,UserProfileSerializer
 
 
@@ -192,3 +192,12 @@ class ListReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
         fields = ['id','product', 'user','rating', 'comment', 'created_at']
+
+
+    
+
+# contactus serilaizer
+class ContactUsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Contact
+        fields = ['name',  'email',  'phone_number', 'enquiry' ]
