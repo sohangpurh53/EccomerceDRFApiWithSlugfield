@@ -1,5 +1,5 @@
 from django.contrib import admin
-from api.models import Cart ,Category, Order, Product, ShippingAddress, Seller, Review, OrderItem, CartItem, AboutUs, ProductImage
+from api.models import Cart ,Category, Order, Product, ShippingAddress, Seller, Review, OrderItem, CartItem, AboutUs, ProductImage, Contact
 
 
 # Register your models here. 
@@ -15,3 +15,4 @@ admin.site.register(OrderItem)
 admin.site.register(CartItem)
 admin.site.register(AboutUs)
 admin.site.register(ProductImage)
+admin.site.register(Contact)

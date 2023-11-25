@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+ 
+    <title>
+       
+        New Inquiry Recieved</title>
+    <style>
+   .container {
+    max-width: 300px;
+    margin: 10% auto;
+    padding: 20px;
+    background-color: #f8f8f8;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+h2 {
+    color: #333;
+    font-size: 1.5em;
+    margin-bottom: 20px;
+}
+
+p {
+    color: #555;
+    margin-bottom: 10px;
+    font-size: 1.1em;
+    text-align: left;
+}
+
+/* Additional style for the data */
+.data {
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+
+/* Add additional styles as needed */
+
+    </style>
+</head>
+<body>
+    <div class="container" >
+        <h2>New Enquiry Recieved</h2>
+        <p>Name: {{ name }}</p>
+        <p>Email: {{ email }}</p>
+        <p>Phone Number: {{ phone_number }}</p>
+        <p>Enquiry: {{ enquiry }}</p>
+    </div>
+</body>
+</html>
