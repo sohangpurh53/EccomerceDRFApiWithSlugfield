@@ -2,6 +2,11 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from api.models import Seller, ShippingAddress
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.conf import settings
+from rest_framework.response import Response
+from rest_framework import status
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, style={'input_type': 'password'})
@@ -13,7 +18,25 @@ class UserSerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
+        username = validated_data.get('username')
+
+        if User.objects.filter(username=username).exists():
+            return Response(
+                {'error': 'Username already exists'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         user = User.objects.create_user(**validated_data)
+
+        # Send an email to the new user
+        subject = 'Welcome to our platform'
+        message = 'Thank you for signing up!'
+        from_email = settings.EMAIL_HOST_USER
+        recipient_list = [user.email]
+                
+        html_message = render_to_string('signupemail.html')
+        send_mail(subject, message, from_email, recipient_list, html_message=html_message)
+
         return user
 
 class SellerSerializer(serializers.ModelSerializer):
