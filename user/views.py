@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework.generics import CreateAPIView
-from user.serializers import UserSerializer, UserProfileSerializer,ShippingAddressSerializer
+from user.serializers import UserSerializer, UserProfileSerializer,ShippingAddressSerializer,UserReviewSerializer
 from dashboard.serializers import UserOrderDetailsSerializer
 from rest_framework.views import APIView
 from rest_framework.generics import RetrieveAPIView, ListAPIView
@@ -47,6 +47,15 @@ class UserOrderDetails(ListAPIView):
             raise Http404("User is not authenticated or has no orders")
     
 
+#user review
+class UserReviews(ListAPIView):
+    serializer_class = UserReviewSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return Review.objects.filter(user=user)
+
     
        
 
@@ -63,3 +72,7 @@ class BlacklistRefreshTokenView(APIView):
         except TokenError as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
+
+
+
+

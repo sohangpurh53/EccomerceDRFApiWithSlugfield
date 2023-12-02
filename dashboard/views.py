@@ -476,10 +476,12 @@ class CreateShippingAddress(CreateAPIView):
 
 class UpdateShippingAddress(RetrieveUpdateAPIView):
     serializer_class = ShippingAddressSerializer
+    queryset = ShippingAddress.objects.all()
+    permission_classes = [IsAuthenticated]
 
-    def get_object(self):
-        slug = self.kwargs.get('slug')
-        return ShippingAddress.objects.get(slug=slug)
+    # def get_object(self):
+    #     slug = self.kwargs.get('slug')
+    #     return ShippingAddress.objects.get(slug=slug)
 
 class DeleteShippingAddress(RetrieveDestroyAPIView):
     serializer_class = ShippingAddressSerializer
@@ -561,3 +563,35 @@ class ContactUsView(CreateAPIView):
         except Exception as e:
             # If any error occurs during the email sending process, you can catch it here and handle it
             return Response({'message': f'Error: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+
+
+
+
+
+#categoriess product
+class CategoriesProduct(ListAPIView):
+    serializer_class_product = SearchProductSerializer
+    serializer_class_category = ListCategorySerializer
+    
+    def get_queryset(self):
+        product_data = Product.objects.all()
+        category_data = Category.objects.all()
+        
+        return {
+            'product_data': product_data,
+            'category_data': category_data,
+        }
+
+    def list(self, request, *args, **kwargs):
+        data = self.get_queryset()
+
+        product_serializer = self.serializer_class_product(data['product_data'], many=True)
+        category_serializer = self.serializer_class_category(data['category_data'], many=True)
+
+        return Response({
+            'product_data': product_serializer.data,
+            'category_data': category_serializer.data,
+        })
+    
+    

@@ -7,6 +7,7 @@ from django.template.loader import render_to_string
 from django.conf import settings
 from rest_framework.response import Response
 from rest_framework import status
+from api.models import Review
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, style={'input_type': 'password'})
@@ -66,3 +67,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 
 
+class UserReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        fields = ['id','product', 'user','rating', 'comment', 'created_at']

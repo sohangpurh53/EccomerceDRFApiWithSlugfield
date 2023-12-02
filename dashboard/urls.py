@@ -13,6 +13,7 @@ from dashboard.views import (
                               CreateReview, UpdateReview, DeleteReview, ListReview,
                               CreateShippingAddress, UpdateShippingAddress, DeleteShippingAddress, ListShippingAddress,
                               CreateSeller,ListSeller,SerachProduct,ContactUsView,
+                              CategoriesProduct,
                               
                               )
 router = DefaultRouter()
@@ -88,7 +89,7 @@ urlpatterns = [
 
    #shippingaddress urls
    path('create/shipping-address/', CreateShippingAddress.as_view() , name='create-shipping-address'),
-   path('update/shipping-address/<slug:slug>/', UpdateShippingAddress.as_view() , name='update-shipping-address'),
+   path('update/shipping-address/<int:pk>/', UpdateShippingAddress.as_view() , name='update-shipping-address'),
    path('delete/shipping-address/<slug:slug>/', DeleteShippingAddress.as_view() , name='delete-shipping-address'),
    path('list/shipping-address/', ListShippingAddress.as_view() , name='lis-shipping-address'),
   
@@ -97,6 +98,11 @@ urlpatterns = [
   path('product/', SerachProduct.as_view()),
 
   #contact us
-  path('contact-us/', ContactUsView.as_view())
+  path('contact-us/', ContactUsView.as_view()),
+
+
+  #categories product
+  path('list/categories/product/', CategoriesProduct.as_view()),
+
 
 ]

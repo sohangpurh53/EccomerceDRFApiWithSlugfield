@@ -201,3 +201,7 @@ class ContactUsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contact
         fields = ['name',  'email',  'phone_number', 'enquiry' ]
+
+
+
+
