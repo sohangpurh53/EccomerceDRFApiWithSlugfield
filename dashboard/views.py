@@ -5,7 +5,7 @@ from api.models import (Cart ,Category, Order, Product,Contact,
                            OrderItem, CartItem, AboutUs, ProductImage)
 
 from dashboard.serializers import (CategorySerializer, ContactUsSerializer,
-                                   ProductSerializers,SearchProductSerializer,AdminListProductSerializer,ListReviewSerializer,
+                                   ProductSerializers,SearchProductSerializer,AdminListProductSerializer,ListReviewSerializer,UpdateReviewSerializer,
                                     ProductsImageSerializers, CartItemSerializer,HomepageProductImageSerializer,ListProductImageSerializer,
                                     OrderSerializer, OrderItemSerializer,ReviewSerializer,ListProductSerializer,ProductSerializer,
                                     ShippingAddressSerializer,ListCategorySerializer, CartSerializer)
@@ -444,11 +444,12 @@ class CreateReview(CreateAPIView):
    
 
 class UpdateReview(RetrieveUpdateAPIView):
-    serializer_class = ReviewSerializer
+    serializer_class = UpdateReviewSerializer
+    permission_classes = [IsAuthenticated]
 
-    def get_object(self):
-        slug = self.kwargs.get('slug')
-        return Review.objects.get(slug=slug)
+    def get_queryset(self):
+        user = self.request.user
+        return Review.objects.filter(user=user)
 
 class DeleteReview(RetrieveDestroyAPIView):
     serializer_class = ReviewSerializer
@@ -476,12 +477,11 @@ class CreateShippingAddress(CreateAPIView):
 
 class UpdateShippingAddress(RetrieveUpdateAPIView):
     serializer_class = ShippingAddressSerializer
-    queryset = ShippingAddress.objects.all()
     permission_classes = [IsAuthenticated]
 
-    # def get_object(self):
-    #     slug = self.kwargs.get('slug')
-    #     return ShippingAddress.objects.get(slug=slug)
+    def get_queryset(self):
+        user = self.request.user
+        return ShippingAddress.objects.filter(user=user)
 
 class DeleteShippingAddress(RetrieveDestroyAPIView):
     serializer_class = ShippingAddressSerializer

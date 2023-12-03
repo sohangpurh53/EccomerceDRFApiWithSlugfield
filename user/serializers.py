@@ -7,7 +7,7 @@ from django.template.loader import render_to_string
 from django.conf import settings
 from rest_framework.response import Response
 from rest_framework import status
-from api.models import Review, Product
+from api.models import Review, Product, ProductImage
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -69,9 +69,15 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    first_image = serializers.SerializerMethodField()
     class Meta:
         model = Product
-        fields = ['id', 'name', 'description', 'price', 'shipping_fee', 'stock', 'category', 'seller',]
+        fields = ['id', 'name', 'description', 'price', 'shipping_fee', 'stock', 'category', 'seller','first_image']
+    def get_first_image(self, obj):
+        first_image = ProductImage.objects.filter(product=obj).first()
+        if first_image:
+            return first_image.image.url
+        return None
 
 class UserReviewSerializer(serializers.ModelSerializer):
     product = ProductSerializer()

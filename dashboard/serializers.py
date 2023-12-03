@@ -205,3 +205,9 @@ class ContactUsSerializer(serializers.ModelSerializer):
 
 
 
+#update product 
+class UpdateReviewSerializer(serializers.ModelSerializer):
+    product = ProductSerializer(read_only=True)
+    class Meta:
+        model = Review
+        fields = ['id','product', 'user','rating', 'comment', 'created_at']

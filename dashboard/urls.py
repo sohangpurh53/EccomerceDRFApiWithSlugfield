@@ -83,7 +83,7 @@ urlpatterns = [
    #reviews urls
    path('create/review/', CreateReview.as_view() , name='create-review'),
   # path('products/<int:product_id>/reviews/create/', CreateReview.as_view(), name='create_review'),
-   path('update/review/<slug:slug>/', UpdateReview.as_view() , name='update-review'),
+   path('update/review/<int:pk>/', UpdateReview.as_view() , name='update-review'),
    path('delete/review/<slug:slug>/', DeleteReview.as_view() , name='delete-review'),
    path('products/<slug:product_slug>/reviews/', ListReview.as_view() , name='list-review'),
 
